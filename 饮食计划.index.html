@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>饮食记录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body{font-family:Arial;padding:20px;background:#f5f5f5;}
+        .box{background:white;padding:20px;border-radius:10px;margin-bottom:15px;}
+        button{padding:12px 18px;background:#42b983;color:white;border:none;border-radius:8px;width:100%;margin-top:10px;}
+        img{max-width:100%;border-radius:8px;margin-top:10px;}
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>🍱 今日饮食记录</h2>
+    <input type="file" id="photo" accept="image/*">
+    <button onclick="upload()">上传今天饮食照片</button>
+    <img id="showImg">
+</div>
+
+<div class="box">
+    <h2>📅 历史记录</h2>
+    <div id="history"></div>
+</div>
+
+<script>
+function upload() {
+    let file = document.getElementById("photo").files[0];
+    if (!file) return alert("请选择照片");
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        let imgSrc = e.target.result;
+        document.getElementById("showImg").src = imgSrc;
+
+        let date = new Date().toLocaleDateString();
+        let list = JSON.parse(localStorage.getItem("dietList") || "[]");
+        list.unshift({ date: date, img: imgSrc });
+        localStorage.setItem("dietList", JSON.stringify(list));
+
+        showHistory();
+        alert("上传成功！");
+    }
+    reader.readAsDataURL(file);
+}
+
+function showHistory() {
+    let list = JSON.parse(localStorage.getItem("dietList") || "[]");
+    let html = "";
+    for (let item of list) {
+        html += `<p>${item.date}</p><img src="${item.img}" width="100%">`;
+    }
+    document.getElementById("history").innerHTML = html;
+}
+
+window.onload = showHistory();
+</script>
+</body>
+</html>
